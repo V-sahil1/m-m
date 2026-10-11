@@ -85,7 +85,8 @@ export default function Booking() {
           </h2>
         </div>
 
-        <div className="reserve" data-reveal>
+        {/* The reserve buttons link straight here, past the statement above */}
+        <div className="reserve" id="reserve" data-reveal>
           <div className="reserve__head">
             <div>
               <h3 className="reserve__title">Reserve Your Pause</h3>

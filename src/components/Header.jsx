@@ -77,10 +77,10 @@ export default function Header({ revealed }) {
         </nav>
 
         <div className="site-header__actions">
-          <motion.a className="btn-pill" href="#booking" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+          <motion.a className="btn-pill" href="#reserve" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
             Reserve Table
           </motion.a>
-          <a className="icon-btn icon-btn--account" href="#booking" aria-label="Guest Concierge">
+          <a className="icon-btn icon-btn--account" href="#reserve" aria-label="Guest Concierge">
             <Icon name="person" />
           </a>
           <button

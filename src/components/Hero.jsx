@@ -128,7 +128,7 @@ export default function Hero({ revealed }) {
                 </div>
 
                 <div className="hero__cta">
-                  <a className="btn btn--hero" href="#booking">Reserve a Table</a>
+                  <a className="btn btn--hero" href="#reserve">Reserve a Table</a>
                   <a className="link-arrow link-arrow--hero" href="#menu">
                     <span>Autumn Menu</span>
                     <Icon name="arrow_forward" />

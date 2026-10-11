@@ -5,6 +5,8 @@ import { stories } from '../data.js';
 
 // Time each story stays featured before the next takes its place
 const AUTO_ADVANCE_MS = 7000;
+// Below this width the featured story and the cards are stacked in one column (see styles.css)
+const STACKED_QUERY = '(max-width: 1023.98px)';
 
 const ease = [0.22, 1, 0.36, 1];
 const pad = (number) => String(number).padStart(2, '0');
@@ -23,6 +25,7 @@ export default function Journal() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const sectionRef = useRef(null);
+  const leadRef = useRef(null);
   const inView = useInView(sectionRef, { amount: 0.4 });
 
   const total = stories.length;
@@ -31,6 +34,15 @@ export default function Journal() {
   const upNext = stories.map((_, offset) => (active + 1 + offset) % total).slice(0, total - 1);
 
   const step = (direction) => setActive((index) => (index + direction + total) % total);
+
+  // On narrow screens the cards sit far below the featured story, so choosing one
+  // brings the page back up to where its title and photograph appear
+  const choose = (index) => {
+    setActive(index);
+    if (!window.matchMedia(STACKED_QUERY).matches) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    leadRef.current?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  };
 
   // Rotate through the stories while the section is on screen and not being hovered
   useEffect(() => {
@@ -57,7 +69,7 @@ export default function Journal() {
         viewport={{ once: true, amount: 0.25 }}
       >
         {/* Lead column: numeral, title and summary of the featured story */}
-        <motion.div className="journal__lead" variants={rise}>
+        <motion.div className="journal__lead" ref={leadRef} variants={rise}>
           <p className="journal__eyebrow">
             Featured Stories <span />
           </p>
@@ -131,7 +143,7 @@ export default function Journal() {
                   exit={{ opacity: 0, y: -24, transition: { duration: 0.35 } }}
                   whileHover={{ y: -6 }}
                   transition={{ layout: { duration: 0.7, ease } }}
-                  onClick={() => setActive(index)}
+                  onClick={() => choose(index)}
                 >
                   <div className="journal-card__media">
                     <img src={story.image} alt={story.alt} loading="lazy" />
