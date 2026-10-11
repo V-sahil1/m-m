@@ -23,7 +23,7 @@ export default function usePageAnimations(scope, onReveal) {
         // still on one of them when its tween is created (the setup runs twice in React's
         // development mode), GSAP reads it as an extra pixel offset that the tween never
         // removes, leaving the element parked off-centre. Zero the pixel offsets first.
-        gsap.set('.hero__line, .hero__bg, .plate__line, .plate__media img', { x: 0, y: 0 });
+        gsap.set('.hero__line, .hero__bg, .plate__line, .plate__media img, .philosophy__media img', { x: 0, y: 0 });
 
         // The zoom-out is anchored to the top of the page, so start there
         if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
@@ -130,15 +130,42 @@ export default function usePageAnimations(scope, onReveal) {
           }
         );
 
-        // The quote lights up word by word as it scrolls into view
+        // Philosophy spread: headline lines rise, the photograph unveils from its base,
+        // then the supporting text, captions and corner details follow
+        gsap
+          .timeline({
+            defaults: { ease: 'power3.out' },
+            scrollTrigger: { trigger: '.philosophy', start: 'top 55%', once: true },
+          })
+          .from('.philosophy__line', { y: 70, opacity: 0, duration: 1.1, stagger: 0.12 }, 0)
+          .fromTo(
+            '.philosophy__media',
+            { clipPath: 'inset(100% 0% 0% 0%)' },
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.3, ease: 'power3.inOut' },
+            0.1
+          )
+          .from('.philosophy__media img', { scale: 1.3, duration: 1.7, ease: 'power2.out' }, 0.1)
+          .from('.philosophy__text, .philosophy__cta', { y: 28, opacity: 0, duration: 0.9, stagger: 0.12 }, 0.5)
+          .from('.philosophy .note', { y: 36, opacity: 0, duration: 0.9, stagger: 0.15 }, 0.7)
+          .from('.philosophy__captions span', { x: -18, opacity: 0, duration: 0.7, stagger: 0.1 }, 1.1)
+          .from('.philosophy__index > *', { y: 12, opacity: 0, duration: 0.6, stagger: 0.06 }, 1)
+          .from('.philosophy__shade', { opacity: 0, duration: 1.6 }, 0.6)
+          .fromTo(
+            '.philosophy__arc',
+            { strokeDasharray: 260, strokeDashoffset: 260 },
+            { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut' },
+            1
+          )
+          .from('.philosophy__detail span', { opacity: 0, x: 12, duration: 0.8 }, 1.6);
+
+        // The photograph drifts inside its frame as the section passes
         gsap.fromTo(
-          '.philosophy__word',
-          { opacity: 0.12 },
+          '.philosophy__media img',
+          { yPercent: -5 },
           {
-            opacity: 1,
-            stagger: 0.1,
+            yPercent: 5,
             ease: 'none',
-            scrollTrigger: { trigger: '.philosophy__quote', start: 'top 85%', end: 'top 30%', scrub: true },
+            scrollTrigger: { trigger: '.philosophy', start: 'top bottom', end: 'bottom top', scrub: true },
           }
         );
 

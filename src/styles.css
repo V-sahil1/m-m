@@ -119,6 +119,10 @@ section[id], main[id] { scroll-margin-top: 0; }
 
 html.is-loading { overflow: hidden; }
 
+/* The page is zoomed past the screen edges behind the loading cover. Clip that here, or
+   phones widen the viewport to fit it and the centred logo lands right of the middle. */
+#root { overflow-x: clip; }
+
 .preloader {
   position: fixed;
   inset: 0;
@@ -478,7 +482,8 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: calc(var(--header-h) + var(--hero-pad)) var(--hero-pad) var(--hero-pad);
+  --hero-pad-y: clamp(1rem, 3.5vh, 4rem);
+  padding: calc(var(--header-h) + var(--hero-pad-y)) var(--hero-pad) var(--hero-pad-y);
   overflow: hidden;
   background: var(--surface-container);
 }
@@ -576,13 +581,14 @@ a:focus-visible {
   50% { opacity: 0.5; }
 }
 
+/* Vertically centred between the header and the status bar */
 .hero__content {
-  margin-top: auto;
-  padding-top: 6rem;
+  margin: auto 0;
+  padding: 1rem 0;
 }
 
 @media (min-width: 768px) {
-  .hero__content { padding-top: 8rem; }
+  .hero__content { padding: 1.5rem 0; }
 }
 
 .hero__grid {
@@ -656,7 +662,7 @@ a:focus-visible {
 
 @media (min-width: 640px) {
   .hero__eyebrow { margin-bottom: 1.5rem; }
-  .hero__title { font-size: 5.5rem; }
+  .hero__title { font-size: min(5.5rem, 13.5vh); }
   .hero__title-accent { padding-left: 0.75rem; }
 
   .hero__lede {
@@ -668,9 +674,9 @@ a:focus-visible {
   }
 }
 
-@media (min-width: 768px)  { .hero__title { font-size: 6.75rem; } }
-@media (min-width: 1024px) { .hero__title { font-size: 7.75rem; } }
-@media (min-width: 1280px) { .hero__title { font-size: 8.25rem; } }
+@media (min-width: 768px)  { .hero__title { font-size: min(6.75rem, 13.5vh); } }
+@media (min-width: 1024px) { .hero__title { font-size: min(7.75rem, 13.5vh); } }
+@media (min-width: 1280px) { .hero__title { font-size: min(8.25rem, 13.5vh); } }
 
 .hero__aside {
   display: flex;
@@ -839,18 +845,24 @@ main > section:not(.hero) > .container { width: 100%; }
 /* Section padding eases off on short screens so more of each section fits */
 main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
 
-.philosophy { box-shadow: 0 -30px 60px rgba(var(--on-surface-rgb), 0.12); }
-
+/* Editorial spread: large headline overlapping a tall photograph, two notes beside it,
+   a chapter index down the right edge and two quiet decorations in the corners. */
 .philosophy {
-  padding: 6rem 0;
+  overflow: hidden;
   background: var(--surface-container-low);
+  box-shadow: 0 -30px 60px rgba(var(--on-surface-rgb), 0.12);
+}
+
+.philosophy__inner {
+  position: relative;
+  z-index: 1;
 }
 
 .section-rule {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: clamp(1.25rem, 3.5vh, 2.5rem);
 }
 
 .section-rule__label {
@@ -865,54 +877,270 @@ main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
 .section-rule__line {
   flex: 1;
   height: 1px;
-  background: rgba(var(--outline-variant-rgb), 0.4);
+  background: rgba(var(--outline-variant-rgb), 0.6);
 }
 
-.philosophy__grid {
+.philosophy__layout {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--gutter);
-  align-items: baseline;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
 }
 
-.philosophy__quote {
+.philosophy__lead {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.philosophy__title {
   font-family: var(--font-serif);
-  font-size: 2.25rem;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-size: clamp(3rem, 13vw, 5rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+
+.philosophy__line {
+  display: block;
+  white-space: nowrap;
+}
+
+.philosophy__text {
+  max-width: 22rem;
+  margin-top: clamp(1.25rem, 3.5vh, 2rem);
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: var(--on-surface-variant);
+}
+
+.philosophy__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: clamp(1.25rem, 3.5vh, 2rem);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+
+.philosophy__cta:hover { color: var(--primary-container); }
+
+.philosophy__cta .material-symbols-outlined {
+  font-size: 1rem;
+  transition: transform 0.3s;
+}
+
+.philosophy__cta:hover .material-symbols-outlined { transform: translateX(0.3rem); }
+
+.philosophy__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--surface-container);
+}
+
+/* Taller than its frame so it can drift as the page scrolls */
+.philosophy__media img {
+  position: absolute;
+  left: 0;
+  top: -8%;
+  width: 100%;
+  height: 116%;
+  object-fit: cover;
+  object-position: 62% center;
+}
+
+.philosophy__captions {
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(250, 250, 233, 0.55);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--surface);
+}
+
+.philosophy__media::after {
+  content: "";
+  position: absolute;
+  inset: 45% 0 0;
+  background: linear-gradient(to top, rgba(20, 22, 14, 0.6), transparent);
 }
 
 .philosophy__notes {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2rem;
-  padding-top: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .philosophy__quote { font-size: 3rem; }
-  .philosophy__notes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (min-width: 1024px) {
-  .philosophy__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .philosophy__quote { grid-column: span 7; font-size: 3.75rem; }
-  .philosophy__notes { grid-column: span 5; padding-top: 0; }
 }
 
 .note__title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1rem;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--secondary);
 }
 
+.note__title span {
+  width: 1.75rem;
+  height: 1px;
+  background: var(--outline-variant);
+}
+
 .note__body {
+  font-size: 0.8125rem;
   line-height: 1.8;
   color: var(--on-surface-variant);
+}
+
+.philosophy__index,
+.philosophy__detail,
+.philosophy__shade { display: none; }
+
+@media (min-width: 640px) {
+  .philosophy__notes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .philosophy__layout {
+    grid-template-columns: minmax(0, 2.7fr) minmax(0, 3fr) minmax(0, 4.5fr) auto;
+    gap: clamp(1.5rem, 2.6vw, 3rem);
+    align-items: stretch;
+    height: min(74vh, 39rem);
+  }
+
+  .philosophy__lead { justify-content: center; }
+  .philosophy__text { font-size: 0.8125rem; line-height: 1.7; }
+
+  /* scaled to the window so the block fits beside the photo while the longest line runs onto its edge */
+  .philosophy__title { font-size: min(5.75rem, 6.8vw, 14vh); }
+
+  .philosophy__media {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .philosophy__notes {
+    align-self: center;
+    gap: clamp(1.25rem, 2.2vw, 2.5rem);
+    padding-left: clamp(0rem, 1.5vw, 1.5rem);
+  }
+
+  .philosophy__index {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: flex-start;
+    gap: 0.7rem;
+    padding-top: 12%;
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    color: var(--on-surface-variant);
+  }
+
+  .philosophy__index-line {
+    width: 1px;
+    height: 1.75rem;
+    background: var(--outline-variant);
+  }
+
+  .philosophy__dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 9999px;
+    background: var(--outline-variant);
+  }
+
+  .philosophy__dot.is-active {
+    width: 5px;
+    height: 5px;
+    background: var(--primary-container);
+    animation: pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Soft leaf shadow, as if cast through a window */
+  .philosophy__shade {
+    position: absolute;
+    left: -3rem;
+    bottom: -3rem;
+    z-index: 0;
+    display: block;
+    width: min(24vw, 21rem);
+    opacity: 0.11;
+    filter: blur(7px);
+    pointer-events: none;
+  }
+
+  .philosophy__shade path {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+
+  .philosophy__shade ellipse { fill: var(--primary); }
+
+  .philosophy__shade-sway {
+    transform-origin: 6% 96%;
+    animation: shade-sway 9s ease-in-out infinite;
+  }
+
+  .philosophy__detail {
+    position: absolute;
+    right: var(--margin);
+    bottom: clamp(1rem, 4vh, 2.5rem);
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    font-size: 0.5625rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    pointer-events: none;
+  }
+
+  .philosophy__detail svg {
+    width: 9rem;
+    overflow: visible;
+  }
+
+  .philosophy__detail span {
+    width: 6.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+
+  .philosophy__arc {
+    fill: none;
+    stroke: var(--outline-variant);
+    stroke-width: 1;
+  }
+}
+
+@keyframes shade-sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(4deg); }
 }
 
 /* 3. Menu
@@ -995,8 +1223,7 @@ main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
   background: var(--surface-variant);
 }
 
-.feature__media img,
-.story__media img {
+.feature__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1701,114 +1928,246 @@ main section.spaces.is-horizontal,
 }
 
 /* 5. Journal
+   Featured story (numeral, title, large photograph) with the other stories as
+   cards beside it and a vertical caption rail. One row on wide screens.
    ========================================================================== */
 
-.journal {
-  padding: 7rem 0;
-  background: var(--surface);
-}
+.journal { background: var(--surface); }
 
-.journal__head {
-  display: flex;
-  flex-direction: column;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 4rem;
-}
-
-@media (min-width: 640px) {
-  .journal__head { flex-direction: row; }
-}
-
-.link-arrow--journal {
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  color: var(--primary);
-}
-
-.link-arrow--journal:hover { color: var(--on-surface); }
-.link-arrow--journal .material-symbols-outlined { font-size: 0.875rem; }
-
-.journal__grid {
+.journal__layout {
+  width: 100%;
+  max-width: 92rem;
+  margin: 0 auto;
+  padding: 0 var(--margin);
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--gutter);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
 }
 
-@media (min-width: 768px) {
-  .journal__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-
-.story {
+.journal__lead {
   display: flex;
   flex-direction: column;
-  cursor: pointer;
+  gap: 2rem;
+  min-height: 0;
 }
 
-.story__media {
-  margin-bottom: 1.5rem;
-  aspect-ratio: 3 / 2;
-  overflow: hidden;
-  background: var(--surface-container);
-}
-
-.story__media img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-.story:hover .story__media img { transform: scale(1.05); }
-
-.story__meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+.journal__eyebrow,
+.journal__pager,
+.journal__more,
+.journal-card__label,
+.journal__rail {
   font-size: 0.6875rem;
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
-.story__vol  { color: var(--secondary); }
-.story__time { color: var(--outline); }
-
-.story__dot {
-  width: 0.25rem;
-  height: 0.25rem;
-  flex: none;
-  border-radius: 9999px;
-  background: var(--outline);
+.journal__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--on-surface-variant);
 }
 
-.story__title {
-  margin-bottom: 1rem;
+.journal__eyebrow span {
+  width: 3rem;
+  height: 1px;
+  background: var(--outline-variant);
+}
+
+.journal__numeral {
+  display: block;
+  margin-bottom: 0.75rem;
   font-family: var(--font-serif);
-  font-size: 1.5rem;
-  line-height: 1.25;
-  transition: color 0.15s;
+  font-size: min(6.5rem, 15vh);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--primary-container);
 }
 
-@media (min-width: 1024px) {
-  .story__title { font-size: 1.75rem; }
+.journal__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.875rem, 5.6vh, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
 }
 
-.story:hover .story__title { color: var(--primary); }
-
-.story__body {
-  margin-bottom: 1.5rem;
+.journal__text,
+.journal-card__text {
   font-size: 0.8125rem;
-  line-height: 1.625;
+  line-height: 1.6;
   letter-spacing: 0.01em;
   color: var(--on-surface-variant);
 }
 
-.story__more {
-  margin-top: auto;
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--primary-container);
+.journal__text {
+  max-width: 24rem;
+  margin-top: 1rem;
+}
+
+.journal__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  color: var(--on-surface);
+  transition: color 0.15s;
+}
+
+.journal__more:hover,
+.journal-card:hover .journal__more { color: var(--primary-container); }
+
+.journal__more .material-symbols-outlined {
+  font-size: 1rem;
+  transition: transform 0.3s;
+}
+
+.journal__more:hover .material-symbols-outlined,
+.journal-card:hover .journal__more .material-symbols-outlined { transform: translateX(0.3rem); }
+
+.journal__pager {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--on-surface-variant);
+}
+
+.journal__pager button {
+  display: flex;
+  color: var(--on-surface);
+}
+
+.journal__pager .material-symbols-outlined { font-size: 1.125rem; }
+
+.journal__pager-track {
+  width: 3rem;
+  height: 1px;
+  background: var(--outline-variant);
+}
+
+.journal__pager-fill {
+  display: block;
+  height: 100%;
+  background: var(--primary-container);
+  transform-origin: left center;
+}
+
+.journal__feature {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--surface-container);
+}
+
+.journal__feature img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.journal__cards {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.journal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.journal-card__media {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--surface-container);
+}
+
+.journal-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.journal-card:hover .journal-card__media img { transform: scale(1.06); }
+
+.journal-card__label {
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.16em;
+  color: var(--secondary);
+}
+
+.journal-card__label i {
+  padding: 0 0.35em;
+  font-style: normal;
+  color: var(--outline);
+}
+
+.journal-card__title {
+  margin-bottom: 0.75rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.375rem, 3.8vh, 1.75rem);
+  line-height: 1.12;
+  transition: color 0.15s;
+}
+
+.journal-card:hover .journal-card__title { color: var(--primary); }
+
+.journal__rail { display: none; }
+
+@media (min-width: 640px) {
+  .journal__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 2rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .journal__layout {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 4.4fr) minmax(0, 4.6fr) auto;
+    gap: clamp(1.5rem, 2.5vw, 3rem);
+    height: min(72vh, 38rem);
+  }
+
+  .journal__lead {
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .journal__feature {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .journal__rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 0.5rem;
+    color: var(--on-surface-variant);
+  }
+
+  .journal__rail > span:first-child {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+  }
+
+  .journal__rail-mark {
+    display: flex;
+    color: var(--primary-container);
+  }
 }
 
 /* 6. Booking
@@ -2204,4 +2563,54 @@ main section.spaces.is-horizontal,
   .site-header:not(.is-scrolled) .site-nav__link { color: rgba(250, 250, 233, 0.9); }
   .site-header:not(.is-scrolled) .site-nav__link:hover { color: #fff; }
   .site-header:not(.is-scrolled) .site-nav__link.is-active { color: var(--on-primary-container); }
+}
+
+/* Hero fits the first screen on short windows
+   ========================================================================== */
+
+.hero__title { margin-bottom: clamp(1rem, 3vh, 2rem); }
+.hero__status { margin-top: clamp(0.75rem, 2.5vh, 2rem); padding-top: clamp(0.75rem, 2.5vh, 1.5rem); }
+
+@media (min-width: 640px) {
+  .hero__eyebrow { margin-bottom: clamp(0.75rem, 2.5vh, 1.5rem); }
+  .hero__lede { font-size: clamp(1rem, 2.7vh, 1.25rem); line-height: 1.6; }
+  .hero__aside { gap: clamp(1rem, 3vh, 2rem); }
+}
+
+/* Booking fits one screen on wide windows: statement on the left, reservation card on the right,
+   both vertically centred. Spacing inside the card eases off on short windows.
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  .booking .container {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+  }
+
+  .booking__statement {
+    max-width: none;
+    margin: 0;
+    text-align: left;
+  }
+
+  /* sized so "Slow down. Settle in." stays on one line in its column */
+  .booking__title { font-size: min(3.25rem, 3.6vw, 10vh); }
+
+  .reserve {
+    max-width: none;
+    margin: 0;
+    padding: clamp(1.5rem, 4.5vh, 3rem);
+  }
+
+  .reserve__head {
+    margin-bottom: clamp(1rem, 3vh, 2rem);
+    padding-bottom: clamp(0.75rem, 2.5vh, 1.5rem);
+  }
+
+  .reserve__form { gap: clamp(0.875rem, 2.4vh, 1.5rem); }
+  .field-row { gap: clamp(0.875rem, 2.4vh, 1.5rem) 1.5rem; }
+  .field-row--2 { padding-top: 0; }
+  .reserve__submit { padding-top: clamp(0.25rem, 1.5vh, 1rem); }
 }
