@@ -1245,16 +1245,13 @@ main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
 .menu-item:nth-child(even) { background: rgba(244, 245, 227, 0.4); }
 .menu-item:hover { background: var(--surface-container-low); }
 
+/* Name on the left, price on the right of the same line at every width */
 .menu-item__row {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 1rem;
   margin-bottom: 0.75rem;
-}
-
-@media (min-width: 640px) {
-  .menu-item__row { flex-direction: row; align-items: baseline; }
 }
 
 .menu-item__name {
@@ -1264,6 +1261,7 @@ main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
 }
 
 .menu-item__num {
+  flex: none;
   font-size: 0.6875rem;
   font-weight: 500;
   line-height: 1.2;
@@ -1284,7 +1282,11 @@ main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
 
 .menu-item:hover h4 { color: var(--primary); }
 
-.menu-item__price { font-weight: 500; }
+.menu-item__price {
+  flex: none;
+  font-weight: 500;
+  white-space: nowrap;
+}
 
 .menu-item__desc {
   max-width: 36rem;
