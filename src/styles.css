@@ -289,6 +289,7 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
 }
 
 @media (min-width: 768px)  { .site-header__inner { padding: 0 2.5rem; } }
@@ -437,6 +438,27 @@ a:focus-visible {
 
 @media (min-width: 1024px) {
   .icon-btn--menu { display: none; }
+}
+
+/* Phones: tighten the bar so the wordmark and the reserve button never touch */
+@media (max-width: 479.98px) {
+  .site-header__inner { padding: 0 var(--margin); gap: 0.75rem; }
+  .brand__name { font-size: 1.25rem; line-height: 1.75rem; }
+  .site-header__actions { gap: 0.625rem; }
+
+  .btn-pill {
+    padding: 0.5625rem 0.875rem;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+}
+
+@media (max-width: 339.98px) {
+  .site-header__inner { gap: 0.5rem; }
+  .brand__name { font-size: 1.125rem; }
+  .site-header__actions { gap: 0.5rem; }
+  .btn-pill { padding: 0.5rem 0.75rem; letter-spacing: 0.08em; }
+  .icon-btn { width: 2rem; height: 2rem; }
 }
 
 /* 1. Hero
