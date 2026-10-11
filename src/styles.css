@@ -1407,8 +1407,8 @@ main section.spaces {
 .bloom--first-top-right {
   top: -1.5rem;
   right: -2rem;
-  width: 72vw;
-  max-width: 24rem;
+  width: 88vw;
+  max-width: 30rem;
 }
 
 .bloom--first-bottom-left {
@@ -1425,22 +1425,23 @@ main section.spaces {
   max-width: 24rem;
 }
 
+/* The top-right image fills only half of its frame, so its two boxes are wider than the others */
 .bloom--last-bottom-right {
   right: -1.5rem;
   bottom: -1.5rem;
-  width: 64vw;
-  max-width: 22rem;
+  width: 110vw;
+  max-width: 34rem;
 }
 
 /* Room for the corner blossoms so they never sit on the text */
 .spaces__intro {
-  padding-top: 5.5rem;
+  padding-top: min(34vw, 9rem);
   padding-bottom: min(58vw, 20rem);
 }
 
 .materials {
   padding-top: min(54vw, 18rem);
-  padding-bottom: min(64vw, 22rem);
+  padding-bottom: min(70vw, 22rem);
 }
 
 .room__media {
@@ -1627,7 +1628,7 @@ main section.spaces.is-horizontal,
 .spaces.is-horizontal .bloom--last-bottom-right {
   right: -2vw;
   bottom: -5vh;
-  width: 36vw;
+  width: 52vw;
 }
 
 .spaces.is-horizontal .room {
