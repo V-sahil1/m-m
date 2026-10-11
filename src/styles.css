@@ -2614,3 +2614,8 @@ main section.spaces.is-horizontal,
   .field-row--2 { padding-top: 0; }
   .reserve__submit { padding-top: clamp(0.25rem, 1.5vh, 1rem); }
 }
+
+/* Reservation form: sending and error states */
+.btn--confirm:disabled { opacity: 0.6; cursor: progress; }
+.confirmation--error { background: #ffdad6; }
+.confirmation--error .material-symbols-outlined { color: #ba1a1a; }

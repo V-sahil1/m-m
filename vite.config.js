@@ -3,4 +3,8 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // The reservation server (server/index.js) handles /api
+    proxy: { '/api': 'http://localhost:3001' },
+  },
 });

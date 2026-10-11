@@ -191,22 +191,47 @@ export const stories = [
   },
 ];
 
+// Tables can be reserved every half hour from 08:00; the last one is 15:30, before the kitchen closes at 16:00
+const SLOT_GROUPS = [
+  { label: 'Morning', from: 8 * 60, to: 11 * 60 + 30 },
+  { label: 'Midday', from: 12 * 60, to: 13 * 60 + 30 },
+  { label: 'Afternoon', from: 14 * 60, to: 15 * 60 + 30 },
+];
+
+const pad = (number) => String(number).padStart(2, '0');
+
+// 'YYYY-MM-DD' for a Date, in local time
+export const dateValue = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
+function timeSlot(minutes) {
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  return {
+    value: `${pad(hour)}:${pad(minute)}`,
+    label: `${hour % 12 || 12}:${pad(minute)} ${hour < 12 ? 'AM' : 'PM'}`,
+    minutes,
+  };
+}
+
+// The real calendar days a table can be reserved for, starting today
+export function bookingDates(now = new Date()) {
+  return Array.from({ length: bookingOptions.daysAhead }, (unused, offset) => {
+    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+    const short = day.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    const long = day.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
+    const label = offset === 0 ? `Today · ${short}` : offset === 1 ? `Tomorrow · ${short}` : long;
+    return { value: dateValue(day), label };
+  });
+}
+
 export const bookingOptions = {
-  dates: [
-    'Today · Autumn Afternoon',
-    'Tomorrow · Morning Session',
-    'Thursday, Oct 24',
-    'Friday, Oct 25',
-    'Saturday, Oct 26',
-    'Sunday, Oct 27',
-  ],
-  times: [
-    '08:30 AM (Morning Pour)',
-    '10:00 AM (Tea Service)',
-    '11:30 AM (Bake Batch 01)',
-    '01:00 PM (Midday Luncheon)',
-    '03:30 PM (Slow Matcha Hour)',
-  ],
+  // How many days, counting today, are open for reservations
+  daysAhead: 14,
+  timeGroups: SLOT_GROUPS.map((group) => {
+    const slots = [];
+    for (let minutes = group.from; minutes <= group.to; minutes += 30) slots.push(timeSlot(minutes));
+    return { label: group.label, slots };
+  }),
   parties: [
     'Solo Contemplation (1)',
     'Pair (2 Guests)',
