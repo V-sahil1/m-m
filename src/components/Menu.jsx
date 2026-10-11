@@ -9,9 +9,6 @@ export default function Menu() {
             <span className="eyebrow">Autumn Collection · Issue No. 04</span>
             <h2 className="section-title section-title--menu">Seasonal Offerings</h2>
           </div>
-          <p className="section-head__intro">
-            Culinary expressions derived from wild mountain botanicals, heirloom grains, and single-estate cultivars harvested at peak autumnal stillness.
-          </p>
         </div>
 
         <div className="menu__grid">

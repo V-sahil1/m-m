@@ -131,18 +131,22 @@ export default function Journal() {
 
         {/* The other stories; choosing one makes it the feature */}
         <div className="journal__cards">
-          <AnimatePresence mode="popLayout" initial={false}>
+          <AnimatePresence mode="popLayout">
             {upNext.map((index) => {
               const story = stories[index];
               return (
+                // Each card reveals itself. A card that joins later (the story that just left
+                // the feature) never receives the layout's "show" variant and would stay invisible.
                 <motion.article
                   layout
                   key={story.title}
                   className="journal-card"
-                  variants={rise}
+                  initial={rise.hidden}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.1 }}
                   exit={{ opacity: 0, y: -24, transition: { duration: 0.35 } }}
                   whileHover={{ y: -6 }}
-                  transition={{ layout: { duration: 0.7, ease } }}
+                  transition={{ duration: 0.9, ease, layout: { duration: 0.7, ease } }}
                   onClick={() => choose(index)}
                 >
                   <div className="journal-card__media">

@@ -1151,6 +1151,13 @@ main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
   background: var(--surface);
 }
 
+/* The menu runs the full width of the screen instead of the shared centred column */
+.menu > .container { max-width: none; }
+
+@media (min-width: 1024px) {
+  .menu > .container { padding: 0 clamp(2rem, 3vw, 3rem); }
+}
+
 .section-head {
   display: flex;
   flex-direction: column;
@@ -1161,12 +1168,6 @@ main > section:not(.hero) { padding-block: clamp(3rem, 8vh, 7rem); }
 
 @media (min-width: 768px) {
   .section-head { flex-direction: row; align-items: flex-end; }
-}
-
-.section-head__intro {
-  max-width: 24rem;
-  line-height: 1.625;
-  color: var(--on-surface-variant);
 }
 
 .menu__grid {
